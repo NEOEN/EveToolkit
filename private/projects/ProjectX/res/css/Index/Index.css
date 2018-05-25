@@ -1,0 +1,15 @@
+p.linkespalte, p.rechtespalte {
+    margin:0 0 12px 0;
+}
+
+p.linkespaltesub, p.rechtespaltesub {
+    margin: 0 0 0 0;
+}
+
+p.linkespaltesub , p.linkespalte {
+    text-align: right;
+}
+
+h1 {
+    text-align: center;
+}

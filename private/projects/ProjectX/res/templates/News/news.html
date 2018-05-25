@@ -1,0 +1,40 @@
+{{ js.add('jquery-3.1.1.min') }}
+{{ js.add('bootstrap.min') }}
+{{ css.add('bootstrap.min') }}
+{{ css.add('bootstrap.-theme.min') }}
+<!DOCTYPE html>
+<html lang="de">
+{% include 'header.html' %}
+<body>
+{% include 'navigation_authed.html' %}
+<div class="container">
+	<table class="table table-hover">
+		<thead>
+		<tr>
+			<th>Id</th>
+			<th>Type</th>
+			<th>Titel</th>
+			<th>Content</th>
+			<th>Erstellt</th>
+			<th>Update</th>
+			<th>Action</th>
+		</tr>
+		</thead>
+	<tbody>
+		{% for news in newsList %}
+			<tr>
+				<td>{{ news.id }}</td>
+				<td>{{ news.type }}</td>
+				<td>{{ news.title }}</td>
+				<td>{{ news.content }}</td>
+				<td>{{ news.createdAt }}</td>
+				<td>{{ news.updatedAt }}</td>
+				<td>Bearbeiten</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+	</table>
+</div>
+{% include 'footer.html' %}
+{{ css.add('Homepage/Homepage') }}
+{{ js.add('Homepage/Homepage') }}
