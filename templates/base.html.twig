@@ -1,9 +1,49 @@
 <!DOCTYPE html>
 <html>
-    {% include 'header.html.twig' %}
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <title>{% block title %}Eve Toolkit{% endblock %}</title>
+        {% block stylesheets %}
+            <link href="{{ asset('css/normalize.css') }}" rel="stylesheet" />
+            <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" />
+            <link href="{{ asset('css/bootstrap-theme.min.css') }}" rel="stylesheet" />
+        {% endblock %}
+    </head>
+
     <body>
-        {% include 'navigation.html.twig' %}
+        <nav class="navbar navbar-default">
+            <div class="container">
+                <div class="row">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="#">EOP {% if app.user %}(User: {{ app.user.username }}, Char: @todo charname) eingeloggt{% else %}Visitor{% endif %}</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li{% if app.request.get('_route') == 'home' %} class="active"{% endif %}><a href="{{ path('home') }}">Home</a></li>
+                            {% if app.user %}
+                                <li{% if app.request.get('_route') == 'logout' %} class="active"{% endif %}><a href="{{ path('logout') }}">Logout</a></li>
+                            {% else %}
+                                <li{% if app.request.get('_route') == 'login' %} class="active"{% endif %}><a href="{{ path('login') }}">Login</a></li>
+                            {% endif %}
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <li{% if app.request.get('_route') == 'test' %} class="active"{% endif %}><a href="{{ path('test') }}">Test</a></li>
+                            {% endif %}
+                            {% if app.user %}
+                                <li><a href="https://login.eveonline.com/oauth/authorize/?response_type=code&redirect_uri={{ url('callback')|url_encode }}&client_id={{ eve_session.getClientId() }}&scope={{ eve_session.getScopes()|join(' ')|url_encode }}&state=uniquestate123"><img src="{{ asset('images/eve-sso-login-white-small.png') }}"></a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
         {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
+        {% block javascripts %}
+            <script src="{{ asset('js/jquery-3.1.1.min.js') }}"></script>
+            <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+        {% endblock %}
     </body>
 </html>
