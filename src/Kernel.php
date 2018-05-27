@@ -14,15 +14,16 @@ class Kernel extends BaseKernel
     use MicroKernelTrait;
 
     const CONFIG_EXTS = '.{php,xml,yaml,yml}';
+    const APP_NAME = 'evetoolkit';
 
     public function getCacheDir()
     {
-        return $this->getProjectDir().'/var/cache/'.$this->environment;
+        return $this->getEnvironmentSpecificDir('/var/cache');
     }
 
     public function getLogDir()
     {
-        return $this->getProjectDir().'/var/log';
+        return $this->getEnvironmentSpecificDir('/var/log');
     }
 
     public function registerBundles()
@@ -57,5 +58,16 @@ class Kernel extends BaseKernel
         $routes->import($confDir.'/{routes}/*'.self::CONFIG_EXTS, '/', 'glob');
         $routes->import($confDir.'/{routes}/'.$this->environment.'/**/*'.self::CONFIG_EXTS, '/', 'glob');
         $routes->import($confDir.'/{routes}'.self::CONFIG_EXTS, '/', 'glob');
+    }
+
+    private function getEnvironmentSpecificDir(string $dir): string
+    {
+        $dir = $dir.'/'.self::APP_NAME.'/'.$this->environment;
+
+        if ($this->environment === 'local') {
+            $dir = $this->getProjectDir().$dir;
+        }
+
+        return $dir;
     }
 }

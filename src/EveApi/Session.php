@@ -6,7 +6,7 @@
  * Time: 06:28
  */
 
-namespace App\Api;
+namespace App\EveApi;
 
 
 class Session

@@ -1,15 +1,23 @@
 {
     "type": "project",
     "license": "proprietary",
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/NEOEN/eseye.git"
+        }
+    ],
     "require": {
         "php": "^7.1.3",
         "ext-iconv": "*",
+        "eveseat/eseye": "dev-avoid_singleton",
         "sensio/framework-extra-bundle": "^5.1",
         "symfony/asset": "^4.0",
         "symfony/console": "^4.0",
         "symfony/flex": "^1.0",
         "symfony/framework-bundle": "^4.0",
         "symfony/lts": "^4@dev",
+        "symfony/monolog-bundle": "^3.2",
         "symfony/security-bundle": "^4.0",
         "symfony/twig-bundle": "^4.0",
         "symfony/yaml": "^4.0"

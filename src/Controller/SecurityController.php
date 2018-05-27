@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Api\Session;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -30,9 +29,8 @@ class SecurityController extends AbstractController
     /**
      * @Route("/callback", name="callback")
      */
-    public function callback(Request $request, Session $session)
+    public function callback(Request $request)
     {
-        var_dump($session->getScopes());
         var_dump($request); die();
     }
 

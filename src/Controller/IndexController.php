@@ -2,7 +2,8 @@
 
 namespace App\Controller;
 
-use App\Api\Session;
+use App\EveApi\Session;
+use Seat\Eseye\Eseye;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -20,8 +21,9 @@ class IndexController extends AbstractController
     /**
      * @Route("/test", name="test")
      */
-    public function test()
+    public function test(Eseye $eseye)
     {
+
         return $this->render('test.html.twig');
     }
 }

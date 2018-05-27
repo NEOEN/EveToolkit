@@ -3,4 +3,4 @@ twig:
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
     globals:
-        eve_session: '@App\Api\Session'
+        eve_session: '@App\EveApi\Session'
