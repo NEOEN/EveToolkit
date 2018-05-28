@@ -63,7 +63,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: <<-SHELL
      apt-get upgrade -y
      apt-get update -y
-     apt-get install -y nginx php-fpm php-mysql php7.2-xml mariadb-server-10.1
+     apt-get install -y nginx php-fpm php-mysql php-memcached memcached php7.2-xml mariadb-server-10.1
 
      # create db
      mysql -e "CREATE USER 'evetoolkit'@'%' IDENTIFIED BY 'master';" > /dev/null 2>&1

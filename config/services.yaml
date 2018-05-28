@@ -48,8 +48,9 @@ services:
     eseye_configuration:
         class: Seat\Eseye\Configuration
         properties:
-            logger: '\Seat\Eseye\Log\NullLogger'
-            cache: '\Seat\Eseye\Cache\NullCache'
+            logger: '\Seat\Eseye\Log\RotatingFileLogger'
+            cache: '\Seat\Eseye\Cache\MemcachedCache'
+            logfile_location: '/var/log/evetoolkit/%kernel.environment%/eseye.log'
 
     eseye:
         class: Seat\Eseye\Eseye
