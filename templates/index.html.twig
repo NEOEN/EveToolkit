@@ -4,6 +4,8 @@
 
 {% block body %}
 
-    @todo index
+    {% for id, char in eve_api.getCharacters() %}
+        <li><a href="{{ path('character.activate', { 'id': id }) }}">{{ char.name }}</a></li>
+    {% endfor %}
 
 {% endblock %}

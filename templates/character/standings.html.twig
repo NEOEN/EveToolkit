@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Eve Toolkit Test{% endblock %}
+
+{% block body %}
+    <table>
+        <thead>
+            <tr>
+                <td>Corp</td>
+                <td>Standing</td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for elem in eve_api.getCharacterStandings() %}
+            <tr>
+                <td>{{ elem.corporation }}</td>
+                <td>{{ elem.standing }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

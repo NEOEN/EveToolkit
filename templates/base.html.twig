@@ -17,7 +17,7 @@
             <div class="container">
                 <div class="row">
                     <div class="navbar-header">
-                        <a class="navbar-brand" href="#">EOP {% if app.user %}(User: {{ app.user.username }}, Char: @todo charname) eingeloggt{% else %}Visitor{% endif %}</a>
+                        <a class="navbar-brand" href="#">EOP {% if app.user %}(User: {{ app.user.username }}, Char: {{ eve_api.getActiveCharacterName() }}) eingeloggt{% else %}Visitor{% endif %}</a>
                     </div>
                 </div>
                 <div class="row">
@@ -30,10 +30,10 @@
                                 <li{% if app.request.get('_route') == 'login' %} class="active"{% endif %}><a href="{{ path('login') }}">Login</a></li>
                             {% endif %}
                             {% if is_granted('ROLE_ADMIN') %}
-                                <li{% if app.request.get('_route') == 'test' %} class="active"{% endif %}><a href="{{ path('test') }}">Test</a></li>
+                                <li{% if app.request.get('_route') == 'character.standings' %} class="active"{% endif %}><a href="{{ path('character.standings') }}">Standings</a></li>
                             {% endif %}
                             {% if app.user %}
-                                <li><a href="https://login.eveonline.com/oauth/authorize/?response_type=code&redirect_uri={{ url('callback')|url_encode }}&client_id={{ eve_session.getClientId() }}&scope={{ eve_session.getScopes()|join(' ')|url_encode }}&state=uniquestate123"><img src="{{ asset('images/eve-sso-login-white-small.png') }}"></a></li>
+                                <li><a href="{{ eve_api.getAuthorizeUrl(url('callback')) }}"><img src="{{ asset('images/eve-sso-login-white-small.png') }}"></a></li>
                             {% endif %}
                         </ul>
                     </div>

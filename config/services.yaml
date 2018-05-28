@@ -3,6 +3,7 @@
 parameters:
     eve_app_client_id: dde46e4021b849c7bba6f7c8c772cb1c
     eve_app_secret_key: YDq3orrhla4clvwyZur9BKn3TwLdqPjHcxk1Xw7X
+
     locale: 'en'
 
 services:
@@ -28,24 +29,29 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-    App\EveApi\Session:
+    App\EveApi\EveApi:
         arguments:
-            $clientId: '%eve_app_client_id%'
-            $secretKey: '%eve_app_secret_key%'
-            $scopes:
-                - 'publicData'
-                - 'esi-location.read_location.v1'
-                - 'esi-assets.read_assets.v1'
-                - 'esi-markets.read_character_orders.v1'
-                - 'esi-contracts.read_character_contracts.v1'
-                - 'esi-characterstats.read.v1'
+            $appConfig:
+                clientId: '%eve_app_client_id%'
+                secretKey: '%eve_app_secret_key%'
+                scopes:
+                    - 'publicData'
+                    - 'esi-location.read_location.v1'
+                    - 'esi-assets.read_assets.v1'
+                    - 'esi-markets.read_character_orders.v1'
+                    - 'esi-contracts.read_character_contracts.v1'
+                    - 'esi-characters.read_standings.v1'
+                    - 'esi-characterstats.read.v1'
+            $client: '@eseye'
+            $session: '@session'
 
-    eve_api_configuration:
+    eseye_configuration:
         class: Seat\Eseye\Configuration
         properties:
             logger: '\Seat\Eseye\Log\NullLogger'
             cache: '\Seat\Eseye\Cache\NullCache'
 
-    Seat\Eseye\Eseye:
+    eseye:
+        class: Seat\Eseye\Eseye
         arguments:
-            $configuration: '@eve_api_configuration'
+            $configuration: '@eseye_configuration'

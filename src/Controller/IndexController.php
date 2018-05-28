@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\EveApi\Session;
+use App\EveApi\EveApi;
 use Seat\Eseye\Eseye;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,11 +19,19 @@ class IndexController extends AbstractController
     }
 
     /**
-     * @Route("/test", name="test")
+     * @Route("/character/activate/{id}", requirements={"id" = "\d+"}, name="character.activate")
      */
-    public function test(Eseye $eseye)
+    public function activate(Request $request, EveApi $api)
     {
+        $api->activate((int) $request->get('id'));
+        return $this->redirect($this->generateUrl('home'));
+    }
 
-        return $this->render('test.html.twig');
+    /**
+     * @Route("/character/standings", name="character.standings")
+     */
+    public function standings(EveApi $api)
+    {
+        return $this->render('character/standings.html.twig');
     }
 }
