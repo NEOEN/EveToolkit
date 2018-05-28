@@ -177,13 +177,19 @@ class EveApi
      */
     public function getCharacterStandings()
     {
+        $standings = [];
+
         $characterId = $this->session->get('eve_active_character', 0);
+        if (0 == $characterId)
+        {
+            return $standings;
+        }
+
         $this->activate($characterId);
         $data = $this->client->invoke('get', '/characters/{character_id}/standings', [
             'character_id' => $characterId,
         ]);
 
-        $standings = [];
         foreach ($data as $standing)
         {
             $standings[$standing->from_id] = [
