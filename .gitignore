@@ -1,4 +1,6 @@
+/.vagrant
 /.idea
+/ubuntu-*-console.log
 ###> symfony/framework-bundle ###
 /.env
 /public/bundles/
