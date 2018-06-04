@@ -10,7 +10,6 @@
     "require": {
         "php": "^7.1.3",
         "ext-iconv": "*",
-        "eveseat/eseye": "dev-avoid_singleton",
         "sensio/framework-extra-bundle": "^5.1",
         "symfony/asset": "^4.0",
         "symfony/console": "^4.0",
@@ -18,12 +17,18 @@
         "symfony/framework-bundle": "^4.0",
         "symfony/lts": "^4@dev",
         "symfony/monolog-bundle": "^3.2",
+        "symfony/orm-pack": "^1.0",
         "symfony/security-bundle": "^4.0",
         "symfony/twig-bundle": "^4.0",
-        "symfony/yaml": "^4.0"
+        "symfony/yaml": "^4.0",
+
+        "eveseat/eseye": "dev-avoid_singleton",
+        "schumann-it/sql-schema-converter": "^1.0",
+        "guzzlehttp/guzzle": "^6.3"
     },
     "require-dev": {
         "symfony/dotenv": "^4.0",
+        "symfony/maker-bundle": "^1.5",
         "symfony/web-server-bundle": "^4.0"
     },
     "config": {

@@ -5,7 +5,7 @@
 {% block body %}
 
     {% for id, char in eve_api.getCharacters() %}
-        <li><a href="{{ path('character.activate', { 'id': id }) }}">{{ char.name }}</a></li>
+        <li><a href="{{ path('character.activate', { 'id': id }) }}">{{ char.name }} (Expires: {{ char.auth_data['token_expires'] }})</a></li>
     {% endfor %}
 
 {% endblock %}

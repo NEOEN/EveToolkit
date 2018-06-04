@@ -2,11 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\Agtagents;
 use App\EveApi\EveApi;
 use Seat\Eseye\Eseye;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\Bundle\DoctrineBundle\Registry as Doctrine;
 
 class IndexController extends AbstractController
 {
@@ -34,4 +36,18 @@ class IndexController extends AbstractController
     {
         return $this->render('character/standings.html.twig');
     }
+
+    /**
+     * @Route("/test", name="test")
+     */
+    public function testController(Doctrine $doctrine)
+    {
+        $foo = $doctrine->getRepository(Agtagents::class)
+            ->findAll();
+
+        var_dump($foo);
+        die();
+        return $this->render('index.html.twig');
+    }
+
 }

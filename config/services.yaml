@@ -56,3 +56,6 @@ services:
         class: Seat\Eseye\Eseye
         arguments:
             $configuration: '@eseye_configuration'
+
+    # Alias for doctrine to enable autowireing
+    Doctrine\Bundle\DoctrineBundle\Registry: '@doctrine'
