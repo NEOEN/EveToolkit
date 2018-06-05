@@ -44,8 +44,6 @@ Vagrant.configure("2") do |config|
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
   config.vm.synced_folder ".", "/var/www/evetoolkit"
-  config.vm.synced_folder "../EveToolkitConverter", "/opt/converter"
-  config.vm.synced_folder "../sql-schema-converter", "/opt/sql-converter"
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
@@ -55,7 +53,7 @@ Vagrant.configure("2") do |config|
      # Display the VirtualBox GUI when booting the machine
      # vb.gui = true
      # Customize the amount of memory on the VM:
-     vb.memory = "6144"
+     vb.memory = "1024"
    end
   #
   # View the documentation for the provider you are using for more
@@ -67,32 +65,23 @@ Vagrant.configure("2") do |config|
      apt-get update -y
      apt-get install -y nginx php-fpm php-mysql php-memcached memcached php7.2-xml mariadb-server-10.1
 
-     # create db
-     #mysql -e "SHOW DATABASES;" | grep "evetoolkit"
-     #if [ "$?" = "1" ]; then
-     #  mysql -e "CREATE DATABASE evetoolkit;"
-     #  # create initial data
-     #  mysql evetoolkit < /vagrant/resources/db.sql
-     #fi
-     #mysql -e "CREATE USER 'evetoolkit'@'%' IDENTIFIED BY 'master';" > /dev/null 2>&1
-     #mysql -e "GRANT ALL PRIVILEGES ON evetoolkit.* TO 'evetoolkit'@'%';"
+     mkdir -p /var/log/evetoolkit/
+     chown -R www-data:root /var/log/evetoolkit/
+     mkdir -p /var/cache/evetoolkit/
+     chown -R www-data:root /var/cache/evetoolkit/
 
      # create sde database
-     mysql -e "SHOW DATABASES;" | grep "sde"
+     mysql -e "CREATE USER 'evetoolkit'@'%' IDENTIFIED BY 'master';" > /dev/null 2>&1
+     mysql -e "SHOW DATABASES;" | grep "evetoolkit"
      if [ "$?" = "1" ]; then
-       mysql -e "CREATE DATABASE sde;"
-       # create initial data
-       mysql sde < /vagrant/resources/sde-20180529-TRANQUILITY.sql
-       mysql sde < /vagrant/resources/sde-add-missing-primary-keys.sql 
+       mysql -e "CREATE DATABASE evetoolkit;"
      fi
-     mysql -e "GRANT ALL PRIVILEGES ON sde.* TO 'sde'@'%';"
+     mysql -e "GRANT ALL PRIVILEGES ON evetoolkit.* TO 'evetoolkit'@'%';"
 
      mkdir -p /etc/ssl/evetoolkit
      cp /var/www/evetoolkit/resources/ssl/fullchain.pem /etc/ssl/evetoolkit/fullchain.pem
      cp /var/www/evetoolkit/resources/ssl/privkey.pem /etc/ssl/evetoolkit/privkey.pem
      cp /var/www/evetoolkit/resources/config/nginx_site.conf /etc/nginx/sites-enabled/evetoolkit
-
-     chown -R www-data:www-data /var/www/evetoolkit/var
 
      /etc/init.d/nginx restart
      /etc/init.d/php7.2-fpm restart
