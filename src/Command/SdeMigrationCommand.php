@@ -18,7 +18,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MigrationCommand extends Command
+class SdeMigrationCommand extends Command
 {
     const MODES = [
         'show-schema-changes',
@@ -36,9 +36,11 @@ class MigrationCommand extends Command
      */
     private $targetConnection;
 
-    public function __construct(Connection $connection)
+    public function __construct(string $name = null, Connection $connection)
     {
         $this->targetConnection = $connection;
+
+        parent::__construct();
     }
 
     protected function configure()
@@ -67,53 +69,7 @@ EOT
             )
         ]);
 
-        // if we have no target connection yet, we add options to create one
-        if (is_null($this->targetConnection)) {
-            $this->getDefinition()->addOptions([
-                new InputOption(
-                    'target-host', null,InputOption::VALUE_REQUIRED, 'Host of the target database".', 'localhost'
-                ),
-                new InputOption(
-                    'target-driver', null, InputOption::VALUE_REQUIRED, 'Db type of the target db.', 'pdo_mysql'
-                ),
-                new InputOption(
-                    'target-dbname', null, InputOption::VALUE_REQUIRED, 'DB name of the target database.', 'sde'
-                ),
-                new InputOption(
-                    'target-user', null, InputOption::VALUE_REQUIRED, 'User name with access to the target DB.', 'root'
-                ),
-                // @todo make password secure
-                new InputOption(
-                    'target-password', null, InputOption::VALUE_REQUIRED, 'Password for the target database.', ''
-                ),
-                new InputOption(
-                    'target-port', null, InputOption::VALUE_REQUIRED, 'Port of the target database..', '3306'
-                )
-            ]);
-        }
-
-        // source connection options
-        $this->getDefinition()->addOptions([
-            new InputOption(
-                'source-host', null, InputOption::VALUE_REQUIRED, 'Host of the source  database in the form".', 'localhost'
-            ),
-            new InputOption(
-                'source-driver', null, InputOption::VALUE_REQUIRED, 'The driver.', 'pdo_mysql'
-            ),
-            new InputOption(
-                'source-dbname', null, InputOption::VALUE_REQUIRED, 'DB name of the source', 'sde_original'
-            ),
-            new InputOption(
-                'source-user', null, InputOption::VALUE_REQUIRED, 'User name with access to the source database.', 'root'
-            ),
-            // @todo make password secure
-            new InputOption(
-                'source-password', null, InputOption::VALUE_REQUIRED, 'Password for the source database.', ''
-            ),
-            new InputOption(
-                'source-port', null, InputOption::VALUE_REQUIRED, 'Port of the source database..', '3306'
-            ),
-        ]);
+        $this->configureConnectionParameters();
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -225,18 +181,20 @@ EOT
 
         try {
             $source = $this->createConnectionFromInput($input, 'source');
+            $source->connect();
         } catch (DBALException $e) {
             $output->write("Failed to create source connection: " . $e->getMessage(), true);
             $success = false;
         }
 
-        if (is_null($this->targetConnection)) {
-            try {
+        try {
+            if (is_null($this->targetConnection)) {
                 $this->targetConnection = $this->createConnectionFromInput($input, 'target');
-            } catch (DBALException $e) {
-                $output->write("Failed to create target connection: " . $e->getMessage(), true);
-                $success = false;
             }
+            $this->targetConnection->connect();
+        } catch (DBALException $e) {
+            $output->write("Failed to create target connection: " . $e->getMessage(), true);
+            $success = false;
         }
 
         if ($success) {
@@ -251,4 +209,89 @@ EOT
         return $success;
     }
 
+    private function configureConnectionParameters(): void
+    {
+        // if we have no target connection yet, we add options to create one
+        if (is_null($this->targetConnection)) {
+            $this->getDefinition()->addOptions(
+                [
+                    new InputOption(
+                        'target-host', null, InputOption::VALUE_REQUIRED, 'Host of the target database".', 'localhost'
+                    ),
+                    new InputOption(
+                        'target-driver', null, InputOption::VALUE_REQUIRED, 'Db type of the target db.', 'pdo_mysql'
+                    ),
+                    new InputOption(
+                        'target-dbname', null, InputOption::VALUE_REQUIRED, 'DB name of the target database.', 'sde'
+                    ),
+                    new InputOption(
+                        'target-user',
+                        null,
+                        InputOption::VALUE_REQUIRED,
+                        'User name with access to the target DB.',
+                        'root'
+                    ),
+                    // @todo make password secure
+                    new InputOption(
+                        'target-password', null, InputOption::VALUE_REQUIRED, 'Password for the target database.', ''
+                    ),
+                    new InputOption(
+                        'target-port', null, InputOption::VALUE_REQUIRED, 'Port of the target database..', '3306'
+                    )
+                ]
+            );
+        }
+
+        $defaultHost = $this->targetConnection->getHost();
+        $defaultDriver = $this->targetConnection->getDriver()->getName();
+        $defaultUser = $this->targetConnection->getUsername();
+        $defaultPassword = $this->targetConnection->getPassword();
+        $defaultPort = $this->targetConnection->getPort();
+        $defaultDbName = 'sde_original';
+
+        if (!is_null($this->targetConnection)) {
+            $defaultHost = $this->targetConnection->getHost();
+            $defaultDriver = $this->targetConnection->getDriver()->getName();
+            $defaultUser = $this->targetConnection->getUsername();
+            $defaultPassword = $this->targetConnection->getPassword();
+            $defaultPort = $this->targetConnection->getPort();
+        }
+
+        // source connection options
+        $this->getDefinition()->addOptions(
+            [
+                new InputOption(
+                    'source-host',
+                    null,
+                    InputOption::VALUE_REQUIRED,
+                    'Host of the source  database in the form".',
+                    $defaultHost
+                ),
+                new InputOption(
+                    'source-driver', null, InputOption::VALUE_REQUIRED, 'The driver.', $defaultDriver
+                ),
+                new InputOption(
+                    'source-dbname', null, InputOption::VALUE_REQUIRED, 'DB name of the source', $defaultDbName
+                ),
+                new InputOption(
+                    'source-user',
+                    null,
+                    InputOption::VALUE_REQUIRED,
+                    'User name with access to the source database.',
+                    $defaultUser
+                ),
+                // @todo make password secure
+                new InputOption(
+                    'source-password',
+                    null,
+                    InputOption::VALUE_REQUIRED,
+                    'Password for the source database.',
+                    $defaultPassword
+                ),
+                new InputOption(
+                    'source-port', null, InputOption::VALUE_REQUIRED, 'Port of the source database..', $defaultPort
+                ),
+            ]
+        );
+    }
 }

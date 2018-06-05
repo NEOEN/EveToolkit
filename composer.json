@@ -23,13 +23,14 @@
         "symfony/yaml": "^4.0",
 
         "eveseat/eseye": "dev-avoid_singleton",
-        "schumann-it/sql-schema-converter": "^1.0",
+        "schumann-it/sql-schema-converter": "dev-feature/compare-data-before-migration",
         "guzzlehttp/guzzle": "^6.3"
     },
     "require-dev": {
         "symfony/dotenv": "^4.0",
         "symfony/maker-bundle": "^1.5",
-        "symfony/web-server-bundle": "^4.0"
+        "symfony/web-server-bundle": "^4.0",
+        "phpmyadmin/phpmyadmin": "^4.8"
     },
     "config": {
         "preferred-install": {

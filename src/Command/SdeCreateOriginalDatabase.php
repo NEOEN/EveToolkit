@@ -15,8 +15,12 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CreateOriginalSdeDatabase extends Command
+class SdeCreateOriginalDatabase extends Command
 {
+    const ALLOWED_ENVIRONMENTS = [
+        'dev'
+    ];
+
     protected function configure()
     {
         $this
@@ -25,17 +29,22 @@ class CreateOriginalSdeDatabase extends Command
             ->setHelp(<<<EOT
 Create original sde database.
 
-Uses system() call with sudo for now. Only available in local and dev environment.
+Uses system() call to mysql. Only available in dev environment.
 EOT
             );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (!in_array($input->getOption('env'), self::ALLOWED_ENVIRONMENTS)) {
+            $output->write("Can only be used in the following environments: " . implode(', ', self::ALLOWED_ENVIRONMENTS), true);
+            return;
+        }
+
         //@todo error handling
         system("sudo mysql -e 'DROP DATABASE IF EXISTS sde_original'");
         system("sudo mysql -e 'CREATE DATABASE sde_original'");
-        system("sudo mysql sde_original < sde/sde_original.sql");
+        system("sudo mysql sde_original < " . SdeDownloadCommand::BASE_PATH . "/sde_original.sql");
 
         $output->write("db updated", true);
     }

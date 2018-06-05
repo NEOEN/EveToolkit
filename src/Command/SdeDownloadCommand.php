@@ -17,6 +17,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SdeDownloadCommand extends Command
 {
+    const ALLOWED_ENVIRONMENTS = [
+        'local'
+    ];
+
+    const BASE_PATH = "./resources/sde";
+
     protected function configure()
     {
         $this
@@ -40,17 +46,23 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (!in_array($input->getOption('env'), self::ALLOWED_ENVIRONMENTS)) {
+            $output->write("Can only be used in the following environments: " . implode(', ', self::ALLOWED_ENVIRONMENTS), true);
+            return;
+        }
+
         // @todo error handling
         $client = new Client();
 
+        system("mkdir -p " . self::BASE_PATH);
         $url = "https://cdn1.eveonline.com/data/sde/" . $input->getArgument('datasource') . "/sde-" . $input->getArgument('release-date') ."-" . mb_strtoupper($input->getArgument('datasource')) .".zip";
-        $client->get($url, array('save_to' => "./sde-" . $input->getArgument('release-date') ."-" . mb_strtoupper($input->getArgument('datasource')) .".zip"));
-        system("unzip ./sde-" . $input->getArgument('release-date') ."-" . mb_strtoupper($input->getArgument('datasource')) .".zip");
+        $client->get($url, array('save_to' => self::BASE_PATH . "/sde-" . $input->getArgument('release-date') ."-" . mb_strtoupper($input->getArgument('datasource')) .".zip"));
+        system("unzip " . self::BASE_PATH . "/sde-" . $input->getArgument('release-date') ."-" . mb_strtoupper($input->getArgument('datasource')) .".zip -d " . self::BASE_PATH);
         $url = "https://www.fuzzwork.co.uk/dump/mysql-latest.tar.bz2";
-        $client->get($url, array('save_to' => "./sde-db-latest.tar.bz2"));
-        system("tar -xjf ./sde-db-latest.tar.bz2");
-        system("mv ./sde-" . $input->getArgument('release-date') . "-" . mb_strtoupper($input->getArgument('datasource')) . "/sde-" . $input->getArgument('release-date') . "-" . mb_strtoupper($input->getArgument('datasource')) . ".sql ./sde/sde_original.sql");
-        system("rm -Rf ./sde-" . $input->getArgument('release-date') . "-" . mb_strtoupper($input->getArgument('datasource')));
+        $client->get($url, array('save_to' => self::BASE_PATH . "/sde-db-latest.tar.bz2"));
+        system("tar -C " . self::BASE_PATH . " -xjf " . self::BASE_PATH . "/sde-db-latest.tar.bz2");
+        system("mv " . self::BASE_PATH . "/sde-" . $input->getArgument('release-date') . "-" . mb_strtoupper($input->getArgument('datasource')) . "/sde-" . $input->getArgument('release-date') . "-" . mb_strtoupper($input->getArgument('datasource')) . ".sql " . self::BASE_PATH . "/sde_original.sql");
+        system("rm -Rf " . self::BASE_PATH . "/sde-" . $input->getArgument('release-date') . "-" . mb_strtoupper($input->getArgument('datasource')));
 
         $output->write("Downloaded", true);
     }

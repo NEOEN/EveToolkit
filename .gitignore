@@ -1,3 +1,4 @@
+.DS_Store
 /.vagrant
 /.idea
 /ubuntu-*-console.log
@@ -12,3 +13,4 @@
 /.web-server-pid
 ###< symfony/web-server-bundle ###
 /src/Entity/
+/resources/sde
