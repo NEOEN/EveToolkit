@@ -63,13 +63,13 @@ class EveApi
 
     public function getAuthorizeUrl(string $callbackUrl)
     {
-        $authId = md5(uniqid());
-        $this->session->set('eve_api_auth_id', $authId);
+        $state = md5(uniqid());
+        $this->session->set('eve_api_auth_state', $state);
         return 'https://login.eveonline.com/oauth/authorize/?' . http_build_query([
             'response_type' => 'code',
             'client_id' => $this->clientId,
             'scope' => implode(' ', $this->scopes),
-            'state' => $authId,
+            'state' => $state,
             'redirect_uri' => $callbackUrl
         ]);
     }
@@ -78,8 +78,12 @@ class EveApi
      * @param $authCode
      * @throws
      */
-    public function fetchCharacter(string $authCode)
+    public function fetchCharacter(string $authCode, string $state)
     {
+        if ($state !== $this->session->get('eve_api_auth_state')) {
+            throw new \RuntimeException("Wrong session state");
+        }
+
         // fetch token data
         $url = "https://login.eveonline.com/oauth/token";
         $options = [

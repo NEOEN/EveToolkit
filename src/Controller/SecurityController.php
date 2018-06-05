@@ -34,7 +34,7 @@ class SecurityController extends AbstractController
      */
     public function callback(Request $request, EveApi $api)
     {
-        $api->fetchCharacter($request->get('code'));
+        $api->fetchCharacter($request->get('code'), $request->get('state'));
         return $this->redirect($this->generateUrl('home'));
     }
 
