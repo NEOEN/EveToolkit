@@ -42,9 +42,10 @@ EOT
         }
 
         //@todo error handling
-        system("sudo mysql -e 'DROP DATABASE IF EXISTS sde_original'");
-        system("sudo mysql -e 'CREATE DATABASE sde_original'");
-        system("sudo mysql sde_original < " . SdeDownloadCommand::BASE_PATH . "/sde_original.sql");
+        system("sudo mysql -e 'DROP DATABASE IF EXISTS sde'");
+        system("sudo mysql -e 'CREATE DATABASE sde'");
+        system("sudo mysql -e 'GRANT ALL PRIVILEGES ON sde.* TO 'evetoolkit'@'%'");
+        system("sudo mysql sde < " . SdeDownloadCommand::BASE_PATH . "/sde.sql");
 
         $output->write("db updated", true);
     }

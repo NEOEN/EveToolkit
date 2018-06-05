@@ -242,12 +242,12 @@ EOT
             );
         }
 
-        $defaultHost = $this->targetConnection->getHost();
-        $defaultDriver = $this->targetConnection->getDriver()->getName();
-        $defaultUser = $this->targetConnection->getUsername();
-        $defaultPassword = $this->targetConnection->getPassword();
-        $defaultPort = $this->targetConnection->getPort();
-        $defaultDbName = 'sde_original';
+        $defaultHost = 'localhost';
+        $defaultDriver = 'pdo_mysql';
+        $defaultUser = 'evetoolkit';
+        $defaultPassword = 'master';
+        $defaultPort = '3306';
+        $defaultDbName = 'sde';
 
         if (!is_null($this->targetConnection)) {
             $defaultHost = $this->targetConnection->getHost();

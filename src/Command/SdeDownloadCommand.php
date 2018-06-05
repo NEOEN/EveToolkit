@@ -61,7 +61,7 @@ EOT
         $url = "https://www.fuzzwork.co.uk/dump/mysql-latest.tar.bz2";
         $client->get($url, array('save_to' => self::BASE_PATH . "/sde-db-latest.tar.bz2"));
         system("tar -C " . self::BASE_PATH . " -xjf " . self::BASE_PATH . "/sde-db-latest.tar.bz2");
-        system("mv " . self::BASE_PATH . "/sde-" . $input->getArgument('release-date') . "-" . mb_strtoupper($input->getArgument('datasource')) . "/sde-" . $input->getArgument('release-date') . "-" . mb_strtoupper($input->getArgument('datasource')) . ".sql " . self::BASE_PATH . "/sde_original.sql");
+        system("mv " . self::BASE_PATH . "/sde-" . $input->getArgument('release-date') . "-" . mb_strtoupper($input->getArgument('datasource')) . "/sde-" . $input->getArgument('release-date') . "-" . mb_strtoupper($input->getArgument('datasource')) . ".sql " . self::BASE_PATH . "/sde.sql");
         system("rm -Rf " . self::BASE_PATH . "/sde-" . $input->getArgument('release-date') . "-" . mb_strtoupper($input->getArgument('datasource')));
 
         $output->write("Downloaded", true);
