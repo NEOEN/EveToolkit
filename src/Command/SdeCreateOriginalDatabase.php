@@ -15,15 +15,17 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CreateOriginalSdeTablesCommand extends Command
+class CreateOriginalSdeDatabase extends Command
 {
     protected function configure()
     {
         $this
-            ->setName('neoen:eve:toolkit:createOriginalSdeDB')
-            ->setDescription('Create sde db')
+            ->setName('neoen:eve:toolkit:create-original-database')
+            ->setDescription('Create original sde database.')
             ->setHelp(<<<EOT
-Create sde db.
+Create original sde database.
+
+Uses system() call with sudo for now. Only available in local and dev environment.
 EOT
             );
     }

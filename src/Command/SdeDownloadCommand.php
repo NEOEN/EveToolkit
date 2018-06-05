@@ -15,12 +15,12 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class UpdateSdeCommand extends Command
+class SdeDownloadCommand extends Command
 {
     protected function configure()
     {
         $this
-            ->setName('neoen:eve:toolkit:updateSde')
+            ->setName('neoen:eve:toolkit:download-sde')
             ->setDescription('Fetch latest sde.')
             ->setDefinition(array(
                 new InputArgument(
@@ -32,6 +32,8 @@ class UpdateSdeCommand extends Command
             ))
             ->setHelp(<<<EOT
 Fetch latest sde.
+
+Uses system() calls. Only available in local and dev environment.
 EOT
             );
     }
