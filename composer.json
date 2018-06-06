@@ -5,10 +5,6 @@
         {
             "type": "git",
             "url": "https://github.com/NEOEN/eseye.git"
-        },
-        {
-            "type": "git",
-            "url": "https://github.com/mekius/esi-api-php.git"
         }
     ],
     "require": {
@@ -26,7 +22,6 @@
         "symfony/twig-bundle": "^4.0",
         "symfony/yaml": "^4.0",
 
-        "mekius/esi-api-php": "*@dev",
         "eveseat/eseye": "dev-avoid_singleton",
         "schumann-it/sql-schema-converter": "dev-feature/compare-data-before-migration",
         "guzzlehttp/guzzle": "^6.3"
@@ -62,7 +57,13 @@
     "scripts": {
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
-            "assets:install --symlink --relative %PUBLIC_DIR%": "symfony-cmd"
+            "assets:install --symlink --relative %PUBLIC_DIR%": "symfony-cmd",
+            "swagger-codegen generate -l php -i https://esi.evetech.net/latest/swagger.json?datasource=tranquility -o src/EveApi/Esi --invoker-package App\\\\EveApi\\\\Esi": "script",
+            "rm -R src/EveApi/Esi/Api": "script",
+            "rm -R src/EveApi/Esi/Model": "script",
+            "mv src/EveApi/Esi/SwaggerClient-php/lib/* src/EveApi/Esi": "script",
+            "rm -R src/EveApi/Esi/SwaggerClient-php": "script",
+            "rm -R src/EveApi/Esi/.swagger-codegen": "script"
         },
         "post-install-cmd": [
             "@auto-scripts"

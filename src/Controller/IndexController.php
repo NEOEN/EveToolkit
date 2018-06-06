@@ -6,11 +6,11 @@ use App\EveApi\Authentication;
 use App\EveApi\Character as CharacterApi;
 use App\EveApi\Entity\CharacterRepository;
 use App\Entity\InvItems;
-use ESI\Api\AllianceApi;
-use ESI\Api\SkillsApi;
-use ESI\Api\UniverseApi;
-use ESI\ApiClient;
-use ESI\Configuration;
+use App\EveApi\Esi\Api\AllianceApi;
+use App\EveApi\Esi\Api\SkillsApi;
+use App\EveApi\Esi\Api\UniverseApi;
+use App\EveApi\Esi\Configuration;
+use GuzzleHttp\Client;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -62,20 +62,22 @@ class IndexController extends AbstractController
         $conf = new Configuration();
         $conf->setUserAgent('NEOEN EVE Toolkit DEV');
         $conf->setAccessToken($char->getAuthentication()->access_token);
-        $conf->setCurlTimeout(6000);
-        $client = new ApiClient($conf);
+
+        $client = new Client();
 
         $skills = [];
-        $skillApi = new SkillsApi($client);
-        $universeApi = new UniverseApi($client);
+        $skillApi = new SkillsApi($client, $conf);
+        $universeApi = new UniverseApi($client, $conf);
         foreach ($skillApi->getCharactersCharacterIdSkills($char->getId())->getSkills() as $key => $skill) {
+
             $skills[] = [
                 'id' => $skill->getSkillId(),
-                'name' => $universeApi->getUniverseTypesTypeId($skill->getSkillId())->getTypeName(),
+                'name' => $universeApi->getUniverseTypesTypeId($skill->getSkillId())->getName(),
                 'points' => $skill->getSkillpointsInSkill(),
-                'level' => $skill->getCurrentSkillLevel()
+                'active_level' => $skill->getActiveSkillLevel(),
+                'trained_level' => $skill->getTrainedSkillLevel(),
             ];
-            if ($key > 100) {
+            if ($key >= 100 - 1) {
                 break;
             }
         }
