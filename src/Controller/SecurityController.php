@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\EveApi\EveApi;
+use App\EveApi\Authentication;
 use Seat\Eseye\Eseye;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,9 +32,9 @@ class SecurityController extends AbstractController
      * @Route("/callback", name="callback")
      * @throws
      */
-    public function callback(Request $request, EveApi $api)
+    public function authorize(Request $request, Authentication $api)
     {
-        $api->fetchCharacter($request->get('code'), $request->get('state'));
+        $api->authorizeCharacter($request->get('code'), $request->get('state'));
         return $this->redirect($this->generateUrl('home'));
     }
 

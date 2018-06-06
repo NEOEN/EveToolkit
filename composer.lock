@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "03f861e39c569fc8f6b02347b2092435",
+    "content-hash": "1360f9afb0717b35d017e057606dba62",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1201,6 +1201,55 @@
                 "sql"
             ],
             "time": "2014-01-12T16:20:24+00:00"
+        },
+        {
+            "name": "mekius/esi-api-php",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mekius/esi-api-php.git",
+                "reference": "bb83bec53226da16ad16cfe53f7c5958f12431b2"
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "php": ">=5.4"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "~1.12",
+                "phpunit/phpunit": "~4.8",
+                "satooshi/php-coveralls": "~1.0",
+                "squizlabs/php_codesniffer": "~2.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ESI\\": "lib/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "ESI\\": "test/"
+                }
+            },
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Swagger and contributors",
+                    "homepage": "https://github.com/swagger-api/swagger-codegen"
+                }
+            ],
+            "homepage": "http://swagger.io",
+            "keywords": [
+                "api",
+                "php",
+                "sdk",
+                "swagger"
+            ],
+            "time": "2016-12-02T02:43:29+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -4748,6 +4797,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "symfony/lts": 20,
+        "mekius/esi-api-php": 20,
         "eveseat/eseye": 20,
         "schumann-it/sql-schema-converter": 20
     },

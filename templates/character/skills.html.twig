@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Eve Toolkit Test{% endblock %}
+
+{% block body %}
+    <table>
+        <thead>
+        <tr>
+                <td>#</td>
+                <td>id</td>
+                <td>name</td>
+                <td>points</td>
+                <td>level</td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for n,elem in skills %}
+            <tr>
+                <td>{{ n+1 }}</td>
+                <td>{{ elem.id }}</td>
+                <td>{{ elem.name }}</td>
+                <td>{{ elem.points }}</td>
+                <td>{{ elem.level }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

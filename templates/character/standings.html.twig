@@ -6,14 +6,16 @@
     <table>
         <thead>
             <tr>
-                <td>Corp</td>
+                <td>from id</td>
+                <td>from type</td>
                 <td>Standing</td>
             </tr>
         </thead>
         <tbody>
-        {% for elem in eve_api.getCharacterStandings() %}
+        {% for elem in standings %}
             <tr>
-                <td>{{ elem.corporation }}</td>
+                <td>{{ elem.from_id }}</td>
+                <td>{{ elem.from_type }}</td>
                 <td>{{ elem.standing }}</td>
             </tr>
         {% endfor %}

@@ -17,7 +17,7 @@
             <div class="container">
                 <div class="row">
                     <div class="navbar-header">
-                        <a class="navbar-brand" href="#">EOP {% if app.user %}(User: {{ app.user.username }}, Char: {{ eve_api.getActiveCharacterName() }}) eingeloggt{% else %}Visitor{% endif %}</a>
+                        <a class="navbar-brand" href="#">EOP {% if app.user %}(User: {{ app.user.username }}, Char: {{ eve_characters.getCurrentName() }}) eingeloggt{% else %}Visitor{% endif %}</a>
                     </div>
                 </div>
                 <div class="row">
@@ -32,8 +32,11 @@
                             {% if is_granted('ROLE_ADMIN') %}
                                 <li{% if app.request.get('_route') == 'character.standings' %} class="active"{% endif %}><a href="{{ path('character.standings') }}">Standings</a></li>
                             {% endif %}
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <li{% if app.request.get('_route') == 'character.skills' %} class="active"{% endif %}><a href="{{ path('character.skills') }}">Skills</a></li>
+                            {% endif %}
                             {% if app.user %}
-                                <li><a href="{{ eve_api.getAuthorizeUrl(url('callback')) }}"><img src="{{ asset('images/eve-sso-login-white-small.png') }}"></a></li>
+                                <li><a href="{{ eve_auth.getAuthorizeUrl(url('callback')) }}"><img src="{{ asset('images/eve-sso-login-white-small.png') }}"></a></li>
                             {% endif %}
                         </ul>
                     </div>

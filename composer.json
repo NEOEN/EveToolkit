@@ -5,6 +5,10 @@
         {
             "type": "git",
             "url": "https://github.com/NEOEN/eseye.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/mekius/esi-api-php.git"
         }
     ],
     "require": {
@@ -22,6 +26,7 @@
         "symfony/twig-bundle": "^4.0",
         "symfony/yaml": "^4.0",
 
+        "mekius/esi-api-php": "*@dev",
         "eveseat/eseye": "dev-avoid_singleton",
         "schumann-it/sql-schema-converter": "dev-feature/compare-data-before-migration",
         "guzzlehttp/guzzle": "^6.3"

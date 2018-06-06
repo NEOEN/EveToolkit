@@ -3,4 +3,5 @@ twig:
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
     globals:
-        eve_api: '@App\EveApi\EveApi'
+        eve_characters: '@App\EveApi\Entity\CharacterRepository'
+        eve_auth: '@App\EveApi\Authentication'
