@@ -65,26 +65,39 @@ Vagrant.configure("2") do |config|
      apt-get update -y
      apt-get install -y nginx php-fpm php-mysql php-memcached memcached php7.2-xml mariadb-server-10.1
 
+     # create log and cache dirs
      mkdir -p /var/log/evetoolkit/
      chown -R www-data:root /var/log/evetoolkit/
      mkdir -p /var/cache/evetoolkit/
      chown -R www-data:root /var/cache/evetoolkit/
 
-     # create sde database
+     # create evetoolkit database
      mysql -e "CREATE USER 'evetoolkit'@'%' IDENTIFIED BY 'master';" > /dev/null 2>&1
      mysql -e "SHOW DATABASES;" | grep "evetoolkit"
      if [ "$?" = "1" ]; then
        mysql -e "CREATE DATABASE evetoolkit;"
+       if [ -f /var/www/evetoolkit/resources/migrated-sde.sql ]; then 
+         mysql evetoolkit < /var/www/evetoolkit/resources/migrated-sde.sql
+       fi 
      fi
      mysql -e "GRANT ALL PRIVILEGES ON evetoolkit.* TO 'evetoolkit'@'%';"
-
+     
+     # make mysql available from remote
+     grep "#bind-address" /etc/mysql/mariadb.conf.d/50-server.cnf > /dev/null
+     if [ "$?" = "1" ]; then 
+         sed -i 's/bind\-address/#bind-address/' /etc/mysql/mariadb.conf.d/50-server.cnf 
+     fi 
+     
+     # upload ssl certs
      mkdir -p /etc/ssl/evetoolkit
      cp /var/www/evetoolkit/resources/ssl/fullchain.pem /etc/ssl/evetoolkit/fullchain.pem
      cp /var/www/evetoolkit/resources/ssl/privkey.pem /etc/ssl/evetoolkit/privkey.pem
      cp /var/www/evetoolkit/resources/config/nginx_site.conf /etc/nginx/sites-enabled/evetoolkit
 
+     # restart services
      /etc/init.d/nginx restart
      /etc/init.d/php7.2-fpm restart
+     /etc/init.d/mysql restart
 
      # if you need to retrieve a new certificate,
      # uncomment the following lines to install certbot
