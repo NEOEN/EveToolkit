@@ -2580,7 +2580,7 @@ class ContactsApi
      * @param  int[] $contact_ids A list of contacts (required)
      * @param  float $standing Standing for the contact (required)
      * @param  string $datasource The server name you would like data from (optional, default to tranquility)
-     * @param  int $label_id Add a custom label to the new contact (optional, default to 0)
+     * @param  int[] $label_ids Add custom labels to the new contact (optional)
      * @param  string $token Access token to use if unable to set a header (optional)
      * @param  bool $watched Whether the contact should be watched, note this is only effective on characters (optional, default to false)
      *
@@ -2588,9 +2588,9 @@ class ContactsApi
      * @throws \InvalidArgumentException
      * @return int[]
      */
-    public function postCharactersCharacterIdContacts($character_id, $contact_ids, $standing, $datasource = 'tranquility', $label_id = '0', $token = null, $watched = 'false')
+    public function postCharactersCharacterIdContacts($character_id, $contact_ids, $standing, $datasource = 'tranquility', $label_ids = null, $token = null, $watched = 'false')
     {
-        list($response) = $this->postCharactersCharacterIdContactsWithHttpInfo($character_id, $contact_ids, $standing, $datasource, $label_id, $token, $watched);
+        list($response) = $this->postCharactersCharacterIdContactsWithHttpInfo($character_id, $contact_ids, $standing, $datasource, $label_ids, $token, $watched);
         return $response;
     }
 
@@ -2603,7 +2603,7 @@ class ContactsApi
      * @param  int[] $contact_ids A list of contacts (required)
      * @param  float $standing Standing for the contact (required)
      * @param  string $datasource The server name you would like data from (optional, default to tranquility)
-     * @param  int $label_id Add a custom label to the new contact (optional, default to 0)
+     * @param  int[] $label_ids Add custom labels to the new contact (optional)
      * @param  string $token Access token to use if unable to set a header (optional)
      * @param  bool $watched Whether the contact should be watched, note this is only effective on characters (optional, default to false)
      *
@@ -2611,10 +2611,10 @@ class ContactsApi
      * @throws \InvalidArgumentException
      * @return array of int[], HTTP status code, HTTP response headers (array of strings)
      */
-    public function postCharactersCharacterIdContactsWithHttpInfo($character_id, $contact_ids, $standing, $datasource = 'tranquility', $label_id = '0', $token = null, $watched = 'false')
+    public function postCharactersCharacterIdContactsWithHttpInfo($character_id, $contact_ids, $standing, $datasource = 'tranquility', $label_ids = null, $token = null, $watched = 'false')
     {
         $returnType = 'int[]';
-        $request = $this->postCharactersCharacterIdContactsRequest($character_id, $contact_ids, $standing, $datasource, $label_id, $token, $watched);
+        $request = $this->postCharactersCharacterIdContactsRequest($character_id, $contact_ids, $standing, $datasource, $label_ids, $token, $watched);
 
         try {
             $options = $this->createHttpClientOption();
@@ -2726,6 +2726,14 @@ class ContactsApi
                     );
                     $e->setResponseObject($data);
                     break;
+                case 520:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\App\EveApi\Esi\Model\PostCharactersCharacterIdContactsError520',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
             }
             throw $e;
         }
@@ -2740,16 +2748,16 @@ class ContactsApi
      * @param  int[] $contact_ids A list of contacts (required)
      * @param  float $standing Standing for the contact (required)
      * @param  string $datasource The server name you would like data from (optional, default to tranquility)
-     * @param  int $label_id Add a custom label to the new contact (optional, default to 0)
+     * @param  int[] $label_ids Add custom labels to the new contact (optional)
      * @param  string $token Access token to use if unable to set a header (optional)
      * @param  bool $watched Whether the contact should be watched, note this is only effective on characters (optional, default to false)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function postCharactersCharacterIdContactsAsync($character_id, $contact_ids, $standing, $datasource = 'tranquility', $label_id = '0', $token = null, $watched = 'false')
+    public function postCharactersCharacterIdContactsAsync($character_id, $contact_ids, $standing, $datasource = 'tranquility', $label_ids = null, $token = null, $watched = 'false')
     {
-        return $this->postCharactersCharacterIdContactsAsyncWithHttpInfo($character_id, $contact_ids, $standing, $datasource, $label_id, $token, $watched)
+        return $this->postCharactersCharacterIdContactsAsyncWithHttpInfo($character_id, $contact_ids, $standing, $datasource, $label_ids, $token, $watched)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -2766,17 +2774,17 @@ class ContactsApi
      * @param  int[] $contact_ids A list of contacts (required)
      * @param  float $standing Standing for the contact (required)
      * @param  string $datasource The server name you would like data from (optional, default to tranquility)
-     * @param  int $label_id Add a custom label to the new contact (optional, default to 0)
+     * @param  int[] $label_ids Add custom labels to the new contact (optional)
      * @param  string $token Access token to use if unable to set a header (optional)
      * @param  bool $watched Whether the contact should be watched, note this is only effective on characters (optional, default to false)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function postCharactersCharacterIdContactsAsyncWithHttpInfo($character_id, $contact_ids, $standing, $datasource = 'tranquility', $label_id = '0', $token = null, $watched = 'false')
+    public function postCharactersCharacterIdContactsAsyncWithHttpInfo($character_id, $contact_ids, $standing, $datasource = 'tranquility', $label_ids = null, $token = null, $watched = 'false')
     {
         $returnType = 'int[]';
-        $request = $this->postCharactersCharacterIdContactsRequest($character_id, $contact_ids, $standing, $datasource, $label_id, $token, $watched);
+        $request = $this->postCharactersCharacterIdContactsRequest($character_id, $contact_ids, $standing, $datasource, $label_ids, $token, $watched);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -2822,14 +2830,14 @@ class ContactsApi
      * @param  int[] $contact_ids A list of contacts (required)
      * @param  float $standing Standing for the contact (required)
      * @param  string $datasource The server name you would like data from (optional, default to tranquility)
-     * @param  int $label_id Add a custom label to the new contact (optional, default to 0)
+     * @param  int[] $label_ids Add custom labels to the new contact (optional)
      * @param  string $token Access token to use if unable to set a header (optional)
      * @param  bool $watched Whether the contact should be watched, note this is only effective on characters (optional, default to false)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function postCharactersCharacterIdContactsRequest($character_id, $contact_ids, $standing, $datasource = 'tranquility', $label_id = '0', $token = null, $watched = 'false')
+    protected function postCharactersCharacterIdContactsRequest($character_id, $contact_ids, $standing, $datasource = 'tranquility', $label_ids = null, $token = null, $watched = 'false')
     {
         // verify the required parameter 'character_id' is set
         if ($character_id === null) {
@@ -2860,6 +2868,10 @@ class ContactsApi
             throw new \InvalidArgumentException('invalid value for "$standing" when calling ContactsApi.postCharactersCharacterIdContacts, must be bigger than or equal to -10.');
         }
 
+        if ($label_ids !== null && count($label_ids) > 63) {
+            throw new \InvalidArgumentException('invalid value for "$label_ids" when calling ContactsApi.postCharactersCharacterIdContacts, number of items must be less than or equal to 63.');
+        }
+
 
         $resourcePath = '/characters/{character_id}/contacts/';
         $formParams = [];
@@ -2873,8 +2885,11 @@ class ContactsApi
             $queryParams['datasource'] = ObjectSerializer::toQueryValue($datasource);
         }
         // query params
-        if ($label_id !== null) {
-            $queryParams['label_id'] = ObjectSerializer::toQueryValue($label_id);
+        if (is_array($label_ids)) {
+            $label_ids = ObjectSerializer::serializeCollection($label_ids, 'csv', true);
+        }
+        if ($label_ids !== null) {
+            $queryParams['label_ids'] = ObjectSerializer::toQueryValue($label_ids);
         }
         // query params
         if ($standing !== null) {
@@ -2978,7 +2993,7 @@ class ContactsApi
      * @param  int[] $contact_ids A list of contacts (required)
      * @param  float $standing Standing for the contact (required)
      * @param  string $datasource The server name you would like data from (optional, default to tranquility)
-     * @param  int $label_id Add a custom label to the contact, use 0 for clearing label (optional, default to 0)
+     * @param  int[] $label_ids Add custom labels to the contact (optional)
      * @param  string $token Access token to use if unable to set a header (optional)
      * @param  bool $watched Whether the contact should be watched, note this is only effective on characters (optional, default to false)
      *
@@ -2986,9 +3001,9 @@ class ContactsApi
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function putCharactersCharacterIdContacts($character_id, $contact_ids, $standing, $datasource = 'tranquility', $label_id = '0', $token = null, $watched = 'false')
+    public function putCharactersCharacterIdContacts($character_id, $contact_ids, $standing, $datasource = 'tranquility', $label_ids = null, $token = null, $watched = 'false')
     {
-        $this->putCharactersCharacterIdContactsWithHttpInfo($character_id, $contact_ids, $standing, $datasource, $label_id, $token, $watched);
+        $this->putCharactersCharacterIdContactsWithHttpInfo($character_id, $contact_ids, $standing, $datasource, $label_ids, $token, $watched);
     }
 
     /**
@@ -3000,7 +3015,7 @@ class ContactsApi
      * @param  int[] $contact_ids A list of contacts (required)
      * @param  float $standing Standing for the contact (required)
      * @param  string $datasource The server name you would like data from (optional, default to tranquility)
-     * @param  int $label_id Add a custom label to the contact, use 0 for clearing label (optional, default to 0)
+     * @param  int[] $label_ids Add custom labels to the contact (optional)
      * @param  string $token Access token to use if unable to set a header (optional)
      * @param  bool $watched Whether the contact should be watched, note this is only effective on characters (optional, default to false)
      *
@@ -3008,10 +3023,10 @@ class ContactsApi
      * @throws \InvalidArgumentException
      * @return array of null, HTTP status code, HTTP response headers (array of strings)
      */
-    public function putCharactersCharacterIdContactsWithHttpInfo($character_id, $contact_ids, $standing, $datasource = 'tranquility', $label_id = '0', $token = null, $watched = 'false')
+    public function putCharactersCharacterIdContactsWithHttpInfo($character_id, $contact_ids, $standing, $datasource = 'tranquility', $label_ids = null, $token = null, $watched = 'false')
     {
         $returnType = '';
-        $request = $this->putCharactersCharacterIdContactsRequest($character_id, $contact_ids, $standing, $datasource, $label_id, $token, $watched);
+        $request = $this->putCharactersCharacterIdContactsRequest($character_id, $contact_ids, $standing, $datasource, $label_ids, $token, $watched);
 
         try {
             $options = $this->createHttpClientOption();
@@ -3115,16 +3130,16 @@ class ContactsApi
      * @param  int[] $contact_ids A list of contacts (required)
      * @param  float $standing Standing for the contact (required)
      * @param  string $datasource The server name you would like data from (optional, default to tranquility)
-     * @param  int $label_id Add a custom label to the contact, use 0 for clearing label (optional, default to 0)
+     * @param  int[] $label_ids Add custom labels to the contact (optional)
      * @param  string $token Access token to use if unable to set a header (optional)
      * @param  bool $watched Whether the contact should be watched, note this is only effective on characters (optional, default to false)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function putCharactersCharacterIdContactsAsync($character_id, $contact_ids, $standing, $datasource = 'tranquility', $label_id = '0', $token = null, $watched = 'false')
+    public function putCharactersCharacterIdContactsAsync($character_id, $contact_ids, $standing, $datasource = 'tranquility', $label_ids = null, $token = null, $watched = 'false')
     {
-        return $this->putCharactersCharacterIdContactsAsyncWithHttpInfo($character_id, $contact_ids, $standing, $datasource, $label_id, $token, $watched)
+        return $this->putCharactersCharacterIdContactsAsyncWithHttpInfo($character_id, $contact_ids, $standing, $datasource, $label_ids, $token, $watched)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -3141,17 +3156,17 @@ class ContactsApi
      * @param  int[] $contact_ids A list of contacts (required)
      * @param  float $standing Standing for the contact (required)
      * @param  string $datasource The server name you would like data from (optional, default to tranquility)
-     * @param  int $label_id Add a custom label to the contact, use 0 for clearing label (optional, default to 0)
+     * @param  int[] $label_ids Add custom labels to the contact (optional)
      * @param  string $token Access token to use if unable to set a header (optional)
      * @param  bool $watched Whether the contact should be watched, note this is only effective on characters (optional, default to false)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function putCharactersCharacterIdContactsAsyncWithHttpInfo($character_id, $contact_ids, $standing, $datasource = 'tranquility', $label_id = '0', $token = null, $watched = 'false')
+    public function putCharactersCharacterIdContactsAsyncWithHttpInfo($character_id, $contact_ids, $standing, $datasource = 'tranquility', $label_ids = null, $token = null, $watched = 'false')
     {
         $returnType = '';
-        $request = $this->putCharactersCharacterIdContactsRequest($character_id, $contact_ids, $standing, $datasource, $label_id, $token, $watched);
+        $request = $this->putCharactersCharacterIdContactsRequest($character_id, $contact_ids, $standing, $datasource, $label_ids, $token, $watched);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -3183,14 +3198,14 @@ class ContactsApi
      * @param  int[] $contact_ids A list of contacts (required)
      * @param  float $standing Standing for the contact (required)
      * @param  string $datasource The server name you would like data from (optional, default to tranquility)
-     * @param  int $label_id Add a custom label to the contact, use 0 for clearing label (optional, default to 0)
+     * @param  int[] $label_ids Add custom labels to the contact (optional)
      * @param  string $token Access token to use if unable to set a header (optional)
      * @param  bool $watched Whether the contact should be watched, note this is only effective on characters (optional, default to false)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function putCharactersCharacterIdContactsRequest($character_id, $contact_ids, $standing, $datasource = 'tranquility', $label_id = '0', $token = null, $watched = 'false')
+    protected function putCharactersCharacterIdContactsRequest($character_id, $contact_ids, $standing, $datasource = 'tranquility', $label_ids = null, $token = null, $watched = 'false')
     {
         // verify the required parameter 'character_id' is set
         if ($character_id === null) {
@@ -3221,6 +3236,10 @@ class ContactsApi
             throw new \InvalidArgumentException('invalid value for "$standing" when calling ContactsApi.putCharactersCharacterIdContacts, must be bigger than or equal to -10.');
         }
 
+        if ($label_ids !== null && count($label_ids) > 63) {
+            throw new \InvalidArgumentException('invalid value for "$label_ids" when calling ContactsApi.putCharactersCharacterIdContacts, number of items must be less than or equal to 63.');
+        }
+
 
         $resourcePath = '/characters/{character_id}/contacts/';
         $formParams = [];
@@ -3234,8 +3253,11 @@ class ContactsApi
             $queryParams['datasource'] = ObjectSerializer::toQueryValue($datasource);
         }
         // query params
-        if ($label_id !== null) {
-            $queryParams['label_id'] = ObjectSerializer::toQueryValue($label_id);
+        if (is_array($label_ids)) {
+            $label_ids = ObjectSerializer::serializeCollection($label_ids, 'csv', true);
+        }
+        if ($label_ids !== null) {
+            $queryParams['label_ids'] = ObjectSerializer::toQueryValue($label_ids);
         }
         // query params
         if ($standing !== null) {

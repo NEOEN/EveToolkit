@@ -1,6 +1,6 @@
 <?php
 /**
- * GetAlliancesAllianceIdContacts200Ok
+ * PostCharactersCharacterIdContactsError520
  *
  * PHP version 5
  *
@@ -33,15 +33,15 @@ use \ArrayAccess;
 use \App\EveApi\Esi\ObjectSerializer;
 
 /**
- * GetAlliancesAllianceIdContacts200Ok Class Doc Comment
+ * PostCharactersCharacterIdContactsError520 Class Doc Comment
  *
  * @category Class
- * @description 200 ok object
+ * @description Error 520
  * @package  App\EveApi\Esi
  * @author   Swagger Codegen team
  * @link     https://github.com/swagger-api/swagger-codegen
  */
-class GetAlliancesAllianceIdContacts200Ok implements ModelInterface, ArrayAccess
+class PostCharactersCharacterIdContactsError520 implements ModelInterface, ArrayAccess
 {
     const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class GetAlliancesAllianceIdContacts200Ok implements ModelInterface, ArrayAccess
       *
       * @var string
       */
-    protected static $swaggerModelName = 'get_alliances_alliance_id_contacts_200_ok';
+    protected static $swaggerModelName = 'post_characters_character_id_contacts_error_520';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -58,10 +58,7 @@ class GetAlliancesAllianceIdContacts200Ok implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $swaggerTypes = [
-        'contact_id' => 'int',
-        'contact_type' => 'string',
-        'label_ids' => 'int[]',
-        'standing' => 'float'
+        'error' => 'string'
     ];
 
     /**
@@ -70,10 +67,7 @@ class GetAlliancesAllianceIdContacts200Ok implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $swaggerFormats = [
-        'contact_id' => 'int32',
-        'contact_type' => null,
-        'label_ids' => 'int64',
-        'standing' => 'float'
+        'error' => null
     ];
 
     /**
@@ -103,10 +97,7 @@ class GetAlliancesAllianceIdContacts200Ok implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $attributeMap = [
-        'contact_id' => 'contact_id',
-        'contact_type' => 'contact_type',
-        'label_ids' => 'label_ids',
-        'standing' => 'standing'
+        'error' => 'error'
     ];
 
     /**
@@ -115,10 +106,7 @@ class GetAlliancesAllianceIdContacts200Ok implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $setters = [
-        'contact_id' => 'setContactId',
-        'contact_type' => 'setContactType',
-        'label_ids' => 'setLabelIds',
-        'standing' => 'setStanding'
+        'error' => 'setError'
     ];
 
     /**
@@ -127,10 +115,7 @@ class GetAlliancesAllianceIdContacts200Ok implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $getters = [
-        'contact_id' => 'getContactId',
-        'contact_type' => 'getContactType',
-        'label_ids' => 'getLabelIds',
-        'standing' => 'getStanding'
+        'error' => 'getError'
     ];
 
     /**
@@ -174,27 +159,8 @@ class GetAlliancesAllianceIdContacts200Ok implements ModelInterface, ArrayAccess
         return self::$swaggerModelName;
     }
 
-    const CONTACT_TYPE_CHARACTER = 'character';
-    const CONTACT_TYPE_CORPORATION = 'corporation';
-    const CONTACT_TYPE_ALLIANCE = 'alliance';
-    const CONTACT_TYPE_FACTION = 'faction';
     
 
-    
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getContactTypeAllowableValues()
-    {
-        return [
-            self::CONTACT_TYPE_CHARACTER,
-            self::CONTACT_TYPE_CORPORATION,
-            self::CONTACT_TYPE_ALLIANCE,
-            self::CONTACT_TYPE_FACTION,
-        ];
-    }
     
 
     /**
@@ -212,10 +178,7 @@ class GetAlliancesAllianceIdContacts200Ok implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
-        $this->container['contact_id'] = isset($data['contact_id']) ? $data['contact_id'] : null;
-        $this->container['contact_type'] = isset($data['contact_type']) ? $data['contact_type'] : null;
-        $this->container['label_ids'] = isset($data['label_ids']) ? $data['label_ids'] : null;
-        $this->container['standing'] = isset($data['standing']) ? $data['standing'] : null;
+        $this->container['error'] = isset($data['error']) ? $data['error'] : null;
     }
 
     /**
@@ -227,23 +190,6 @@ class GetAlliancesAllianceIdContacts200Ok implements ModelInterface, ArrayAccess
     {
         $invalidProperties = [];
 
-        if ($this->container['contact_id'] === null) {
-            $invalidProperties[] = "'contact_id' can't be null";
-        }
-        if ($this->container['contact_type'] === null) {
-            $invalidProperties[] = "'contact_type' can't be null";
-        }
-        $allowedValues = $this->getContactTypeAllowableValues();
-        if (!in_array($this->container['contact_type'], $allowedValues)) {
-            $invalidProperties[] = sprintf(
-                "invalid value for 'contact_type', must be one of '%s'",
-                implode("', '", $allowedValues)
-            );
-        }
-
-        if ($this->container['standing'] === null) {
-            $invalidProperties[] = "'standing' can't be null";
-        }
         return $invalidProperties;
     }
 
@@ -256,124 +202,30 @@ class GetAlliancesAllianceIdContacts200Ok implements ModelInterface, ArrayAccess
     public function valid()
     {
 
-        if ($this->container['contact_id'] === null) {
-            return false;
-        }
-        if ($this->container['contact_type'] === null) {
-            return false;
-        }
-        $allowedValues = $this->getContactTypeAllowableValues();
-        if (!in_array($this->container['contact_type'], $allowedValues)) {
-            return false;
-        }
-        if ($this->container['standing'] === null) {
-            return false;
-        }
         return true;
     }
 
 
     /**
-     * Gets contact_id
-     *
-     * @return int
-     */
-    public function getContactId()
-    {
-        return $this->container['contact_id'];
-    }
-
-    /**
-     * Sets contact_id
-     *
-     * @param int $contact_id contact_id integer
-     *
-     * @return $this
-     */
-    public function setContactId($contact_id)
-    {
-        $this->container['contact_id'] = $contact_id;
-
-        return $this;
-    }
-
-    /**
-     * Gets contact_type
+     * Gets error
      *
      * @return string
      */
-    public function getContactType()
+    public function getError()
     {
-        return $this->container['contact_type'];
+        return $this->container['error'];
     }
 
     /**
-     * Sets contact_type
+     * Sets error
      *
-     * @param string $contact_type contact_type string
+     * @param string $error Error 520 message
      *
      * @return $this
      */
-    public function setContactType($contact_type)
+    public function setError($error)
     {
-        $allowedValues = $this->getContactTypeAllowableValues();
-        if (!in_array($contact_type, $allowedValues)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value for 'contact_type', must be one of '%s'",
-                    implode("', '", $allowedValues)
-                )
-            );
-        }
-        $this->container['contact_type'] = $contact_type;
-
-        return $this;
-    }
-
-    /**
-     * Gets label_ids
-     *
-     * @return int[]
-     */
-    public function getLabelIds()
-    {
-        return $this->container['label_ids'];
-    }
-
-    /**
-     * Sets label_ids
-     *
-     * @param int[] $label_ids label_ids array
-     *
-     * @return $this
-     */
-    public function setLabelIds($label_ids)
-    {
-        $this->container['label_ids'] = $label_ids;
-
-        return $this;
-    }
-
-    /**
-     * Gets standing
-     *
-     * @return float
-     */
-    public function getStanding()
-    {
-        return $this->container['standing'];
-    }
-
-    /**
-     * Sets standing
-     *
-     * @param float $standing Standing of the contact
-     *
-     * @return $this
-     */
-    public function setStanding($standing)
-    {
-        $this->container['standing'] = $standing;
+        $this->container['error'] = $error;
 
         return $this;
     }
