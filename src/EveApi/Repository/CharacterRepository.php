@@ -6,8 +6,9 @@
  * Time: 03:14
  */
 
-namespace App\EveApi\Entity;
+namespace App\EveApi\Repository;
 
+use App\EveApi\Entity\Character;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class CharacterRepository

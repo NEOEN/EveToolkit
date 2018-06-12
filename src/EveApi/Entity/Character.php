@@ -30,21 +30,6 @@ class Character
      */
     private $originalData;
 
-    /**
-     * @param array $characterData
-     * @return Character
-     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
-     */
-    public static function fromArray(array $characterData)
-    {
-        //@todo error handling
-        $char = new self($characterData['id']);
-        $char->setName($characterData['name']);
-        $char->setAuthentication(new EsiAuthentication($characterData['auth_data']));
-        $char->setOriginalData($characterData['original_data']);
-        return $char;
-    }
-
     public function __construct(int $id)
     {
         $this->id = $id;
@@ -125,4 +110,20 @@ class Character
             ]
         ];
     }
+
+    /**
+     * @param array $characterData
+     * @return Character
+     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
+     */
+    public static function fromArray(array $characterData)
+    {
+        //@todo error handling
+        $char = new self($characterData['id']);
+        $char->setName($characterData['name']);
+        $char->setAuthentication(new EsiAuthentication($characterData['auth_data']));
+        $char->setOriginalData($characterData['original_data']);
+        return $char;
+    }
+
 }

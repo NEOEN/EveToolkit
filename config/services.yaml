@@ -47,29 +47,46 @@ services:
                     - 'esi-characters.read_standings.v1'
                     - 'esi-characterstats.read.v1'
                     - 'esi-skills.read_skills.v1'
-            $client: '@eseye'
+            $client: '@eve_api_client'
             $characterRepository: '@eve_api_character_repository'
 
-    App\EveApi\Character:
-        arguments:
-            $client: '@eseye'
-
     eve_api_character_repository:
-        class: App\EveApi\Entity\CharacterRepository
+        class: App\EveApi\Repository\CharacterRepository
         arguments:
-          $session: '@session'
+            $session: '@session'
 
-    eseye_configuration:
-        class: Seat\Eseye\Configuration
-        properties:
-            logger: '\Seat\Eseye\Log\RotatingFileLogger'
-            cache: '\Seat\Eseye\Cache\MemcachedCache'
-            logfile_location: '/var/log/evetoolkit/%kernel.environment%/eseye.log'
+    eve_api_client:
+        class: GuzzleHttp\Client
 
-    eseye:
-        class: Seat\Eseye\Eseye
+    eve_api_client_configuration:
+        class: App\EveApi\Esi\Configuration
+        calls:
+            - method: setUserAgent
+              arguments:
+                  - 'NEOEN EVE Toolkit DEV'
+            - method: setHost
+              arguments:
+                  - 'https://esi.evetech.net/latest'
+            - method: setDebug
+              arguments:
+                  - '%kernel.debug%'
+
+    eve_api_header_selector:
+        class: App\EveApi\Esi\HeaderSelector
+
+    eva_api_skills:
+        class: App\EveApi\Esi\Api\SkillsApi
         arguments:
-            $configuration: '@eseye_configuration'
+            $client: '@eve_api_client'
+            $config: '@eve_api_client_configuration'
+            $selector: '@eve_api_header_selector'
+
+    eva_api_universe:
+        class: App\EveApi\Esi\Api\SkillsApi
+        arguments:
+            $client: '@eve_api_client'
+            $config: '@eve_api_client_configuration'
+            $selector: '@eve_api_header_selector'
 
     # Alias for doctrine to enable autowireing
     Doctrine\Bundle\DoctrineBundle\Registry: '@doctrine'

@@ -8,13 +8,17 @@
 
 namespace App\EveApi;
 
-use App\EveApi\Entity\CharacterRepository;
-use GuzzleHttp\Client as HttpClient;
-use Seat\Eseye\Eseye;
-use Symfony\Component\HttpFoundation\Session\Session;
+use App\EveApi\Esi\Configuration;
+use App\EveApi\Repository\CharacterRepository;
+use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
+use Seat\Eseye\Containers\EsiAuthentication;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use App\EveApi\Entity\Character;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 
-class Authentication
+class Authentication implements EventSubscriberInterface
 {
     private const OAUTH_URL = "https://login.eveonline.com/oauth/token";
     private const OAUTH_HTTP_CLIENT_OPTIONS = [
@@ -36,6 +40,8 @@ class Authentication
             'Authorization' => ''
         ]
     ];
+    private const TOKEN_EXPIRES_DATE_FORMAT = 'Y-m-d H:i:s';
+    private const TOKEN_MIN_VALID_TIME_INTERVAL_SPEC = 'PT1M';
 
     /**
      * @var String
@@ -50,24 +56,97 @@ class Authentication
      */
     private $scopes;
     /**
-     * @var Eseye
+     * @var Client
      */
     private $client;
     /**
      * @var CharacterRepository
      */
     private $characterRepository;
+    /**
+     * @var Configuration
+     */
+    private $apiConfig;
 
     /**
      * Session constructor.
      */
-    public function __construct(array $appConfig, Eseye $client, CharacterRepository $characterRepository)
+    public function __construct(array $appConfig, ClientInterface $client, CharacterRepository $characterRepository, Configuration $apiConfig)
     {
         $this->clientId = $appConfig['clientId'];
         $this->secretKey = $appConfig['secretKey'];
         $this->scopes = $appConfig['scopes'];
         $this->client = $client;
         $this->characterRepository = $characterRepository;
+        $this->apiConfig = $apiConfig;
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return [
+            KernelEvents::REQUEST => [
+                // first refresh tokens
+                ['refreshTokensOnRequest', 10],
+                // then promote the current char to the API
+                ['promoteAccessTokenToApi', -10]
+            ]
+        ];
+    }
+
+    /**
+     * Authenticate current char with the api
+     *
+     * @param GetResponseEvent $event
+     * @throws
+     */
+    public function promoteAccessTokenToApi(GetResponseEvent $event)
+    {
+        if (!$event->isMasterRequest()) {
+            // don't do anything if it's not the master request
+            return;
+        }
+
+        $char = $this->characterRepository->getCurrent();
+        if (!is_null($char)) {
+            $this->apiConfig->setAccessToken($char->getAuthentication()->access_token);
+        }
+    }
+
+    /**
+     * Refresh tokens for all characters if necessary
+     *
+     * @param GetResponseEvent $event
+     * @throws
+     */
+    public function refreshTokensOnRequest(GetResponseEvent $event)
+    {
+        if (!$event->isMasterRequest()) {
+            // don't do anything if it's not the master request
+            return;
+        }
+
+        foreach ($this->characterRepository->fetchAll() as $character) {
+            $auth = $character->getAuthentication();
+            if ($this->tokenExpires($auth)) {
+                $token = $this->refreshToken($auth->refresh_token);
+                $auth->access_token = $token['access_token'];
+                $auth->refresh_token = $token['refresh_token'];
+                $auth->token_expires = $token['token_expires'];
+                $this->characterRepository->set($character);
+            }
+        }
+    }
+
+    /**
+     * @param EsiAuthentication $auth
+     * @throws \Exception
+     */
+    private function tokenExpires(EsiAuthentication $auth)
+    {
+        $expired = new \DateTime();
+        $expired->add(new \DateInterval(self::TOKEN_MIN_VALID_TIME_INTERVAL_SPEC));
+        $expires = \DateTime::createFromFormat(self::TOKEN_EXPIRES_DATE_FORMAT, $auth->token_expires);
+        return $expires <= $expired;
     }
 
     public function getAuthorizeUrl(string $callbackUrl)
@@ -89,100 +168,91 @@ class Authentication
      * @param $state
      * @throws
      */
-    public function authorizeCharacter(string $authCode, string $state)
+    public function authorize(string $authCode, string $state)
     {
         if (!$this->characterRepository->isValidAuthState($state)) {
-            throw new \RuntimeException("Wrong session state");
+            throw new \RuntimeException("Mismatched session state");
         }
 
         // @todo error handling
-        $character = $this->validate($authCode);
+        $authData = $this->getToken($authCode);
+        $characterData = $this->verify($authData);
 
-        $this->characterRepository->set(Character::fromArray($character));
+        $authData['scopes'] = $characterData['Scopes'];
+        $authData['client_id'] = $this->clientId;
+        $authData['secret'] = $this->secretKey;
+
+        $this->characterRepository->set(Character::fromArray([
+            'id' => (int) $characterData['CharacterID'],
+            'name' => $characterData['CharacterName'],
+            'original_data' => $characterData,
+            'auth_data' => $authData
+        ]));
 
         // invalidate auth session
         $this->characterRepository->invalidateAuthState();
     }
 
     /**
-     * Refresh the Access token that we have in the EsiAccess container.
-     *
-     * @throws \Seat\Eseye\Exceptions\RequestFailedException
-     * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
-     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
+     * Refresh an access token using the refresh token.
      */
-    public function refreshToken(Character $character)
+    public function refreshToken(string $refreshToken)
     {
-        $client = new HttpClient();
-
         $options = self::OAUTH_HTTP_CLIENT_OPTIONS;
         $options['headers']['Authorization'] = 'Basic '.base64_encode($this->clientId.":".$this->secretKey);
         unset($options['form_params']);
+        $params = [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => $refreshToken
+        ];
+        $url = self::OAUTH_URL . '?' . http_build_query($params);
 
-        $auth = $character->getAuthentication();
-
-        $response = $client->post(self::OAUTH_URL . '?grant_type=refresh_token&refresh_token=' . $character->getAuthentication()->refresh_token, $options);
-        $data = json_decode($response->getBody(), true);
-        $expires = new \DateTime();
-        $expires->add(new \DateInterval('PT'.$data['expires_in'].'S'));
-
-        $auth->access_token = $data['access_token'];
-        $auth->refresh_token = $data['refresh_token'];
-        $auth->token_expires = $expires->format('Y-m-d H:i:s');
-
-        $this->characterRepository->set($character);
+        return $this->fetchToken($url, $options);
     }
 
     /**
      * @param string $authCode
-     * @param $client
      * @return array
-     * @throws \Exception
      */
-    private function validate(string $authCode): array
+    private function getToken(string $authCode): array
     {
-        $client = new HttpClient();
-
         $options = self::OAUTH_HTTP_CLIENT_OPTIONS;
         $options['headers']['Authorization'] = 'Basic '.base64_encode($this->clientId.":".$this->secretKey);
         $options['form_params']['code'] = $authCode;
 
-        $response = $client->post(self::OAUTH_URL, $options);
+        return $this->fetchToken(self::OAUTH_URL, $options);
+    }
+
+    /**
+     * @param $options
+     * @return array
+     */
+    private function fetchToken($url, $options): array
+    {
+        $response = $this->client->request('POST', $url, $options);
 
         $data = json_decode($response->getBody(), true);
         $expires = new \DateTime();
         $expires->add(new \DateInterval('PT'.$data['expires_in'].'S'));
 
-        return $this->fetchCharacter([
+        return [
             'access_token' => $data['access_token'],
             'refresh_token' => $data['refresh_token'],
-            'token_expires' => $expires->format('Y-m-d H:i:s'),
-        ]);
+            'token_expires' => $expires->format(self::TOKEN_EXPIRES_DATE_FORMAT),
+        ];
     }
 
     /**
-     * @param $tokenData
+     * @param array $tokenData
      * @return array
      */
-    private function fetchCharacter($tokenData): array
+    private function verify(array $tokenData): array
     {
-        $client = new HttpClient();
-
         $options = self::VERIFY_CHARACTER_HTTP_CLIENT_OPTIONS;
         $options['headers']['Authorization'] = 'Bearer '.$tokenData['access_token'];
 
-        $response = $client->get(self::VERIFY_CHARACTER_URL, $options);
+        $response = $this->client->request('GET', self::VERIFY_CHARACTER_URL, $options);
 
-        $data = json_decode($response->getBody(), true);
-        $tokenData['scopes'] = explode(' ', $data['Scopes']);
-        $tokenData['client_id'] = $this->clientId;
-        $tokenData['secret'] = $this->secretKey;
-
-        return [
-            'id' => (int) $data['CharacterID'],
-            'name' => $data['CharacterName'],
-            'original_data' => $data,
-            'auth_data' => $tokenData
-        ];
+        return json_decode($response->getBody(), true);
     }
 }
