@@ -34,10 +34,9 @@ class CharacterController extends AbstractController
     public function standings(CharacterRepository $repository, CharacterApi $api)
     {
         // @todo error handling
-        return $this->render(
-            'character/standings.html.twig',
-            ['standings' => $api->getCharactersCharacterIdStandings($repository->getCurrent()->getId())]
-        );
+        return $this->render('character/standings.html.twig', [
+            'standings' => $api->getCharactersCharacterIdStandings($repository->getCurrent()->getId())
+        ]);
     }
 
     /**
