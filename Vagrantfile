@@ -63,10 +63,17 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: <<-SHELL
      cd /var/www/evetoolkit/
 
-     apt-get upgrade -y
-     apt-get update -y
-     apt-get install -y nginx php-fpm php-mysql php-memcached memcached php7.2-xml mariadb-server-10.1
-
+     apt upgrade -y
+     apt update -y
+     apt install -y nginx php-fpm php-mysql php-memcached memcached php7.2-xml mariadb-server-10.1
+     # for debugging
+     apt install -y php-dev build-essential php-pear
+     pecl install xdebug
+     echo "zend_extension=/usr/lib/php/20170718/xdebug.so" > /etc/php/7.2/mods-available/xdebug.ini
+     echo "xdebug.remote_connect_back=1" >> /etc/php/7.2/mods-available/xdebug.ini
+     echo "xdebug.remote_enable=1" >> /etc/php/7.2/mods-available/xdebug.ini
+     echo "xdebug.remote_port=9000" >> /etc/php/7.2/mods-available/xdebug.ini
+     
      # make mysql available from remote
      grep "#bind-address" /etc/mysql/mariadb.conf.d/50-server.cnf > /dev/null
      if [ "$?" = "1" ]; then 
