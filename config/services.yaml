@@ -4,7 +4,6 @@ parameters:
     eve_app_client_id: dde46e4021b849c7bba6f7c8c772cb1c
     eve_app_secret_key: YDq3orrhla4clvwyZur9BKn3TwLdqPjHcxk1Xw7X
 
-    locale: 'en'
 
 services:
     # default configuration for services in *this* file

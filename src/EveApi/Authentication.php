@@ -8,11 +8,11 @@
 
 namespace App\EveApi;
 
+use App\EveApi\Entity\AuthData;
 use App\EveApi\Esi\Configuration;
 use App\EveApi\Repository\CharacterRepository;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
-use Seat\Eseye\Containers\EsiAuthentication;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use App\EveApi\Entity\Character;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -108,7 +108,7 @@ class Authentication implements EventSubscriberInterface
 
         $char = $this->characterRepository->getCurrent();
         if (!is_null($char)) {
-            $this->apiConfig->setAccessToken($char->getAuthentication()->access_token);
+            $this->apiConfig->setAccessToken($char->getAuthentication()->getAccessToken());
         }
     }
 
@@ -128,24 +128,24 @@ class Authentication implements EventSubscriberInterface
         foreach ($this->characterRepository->fetchAll() as $character) {
             $auth = $character->getAuthentication();
             if ($this->tokenExpires($auth)) {
-                $token = $this->refreshToken($auth->refresh_token);
-                $auth->access_token = $token['access_token'];
-                $auth->refresh_token = $token['refresh_token'];
-                $auth->token_expires = $token['token_expires'];
+                $token = $this->refreshToken($auth->getRefreshToken());
+                $auth->setAccessToken($token['access_token']);
+                $auth->setRefreshToken($token['refresh_token']);
+                $auth->setTokenExpires($token['token_expires']);
                 $this->characterRepository->set($character);
             }
         }
     }
 
     /**
-     * @param EsiAuthentication $auth
+     * @param AuthData $auth
      * @throws \Exception
      */
-    private function tokenExpires(EsiAuthentication $auth)
+    private function tokenExpires(AuthData $auth)
     {
         $expired = new \DateTime();
         $expired->add(new \DateInterval(self::TOKEN_MIN_VALID_TIME_INTERVAL_SPEC));
-        $expires = \DateTime::createFromFormat(self::TOKEN_EXPIRES_DATE_FORMAT, $auth->token_expires);
+        $expires = \DateTime::createFromFormat(self::TOKEN_EXPIRES_DATE_FORMAT, $auth->getTokenExpires());
         return $expires <= $expired;
     }
 

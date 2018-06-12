@@ -8,9 +8,6 @@
 
 namespace App\EveApi\Entity;
 
-
-use Seat\Eseye\Containers\EsiAuthentication;
-
 class Character
 {
     /**
@@ -22,7 +19,7 @@ class Character
      */
     private $name;
     /**
-     * @var EsiAuthentication
+     * @var AuthData
      */
     private $authentication;
     /**
@@ -76,17 +73,17 @@ class Character
     }
 
     /**
-     * @param EsiAuthentication $authentication
+     * @param AuthData $authentication
      */
-    public function setAuthentication(EsiAuthentication $authentication): void
+    public function setAuthentication(AuthData $authentication): void
     {
         $this->authentication = $authentication;
     }
 
     /**
-     * @return EsiAuthentication
+     * @return AuthData
      */
-    public function getAuthentication(): EsiAuthentication
+    public function getAuthentication(): AuthData
     {
         return $this->authentication;
     }
@@ -101,12 +98,12 @@ class Character
             'name' => $this->name,
             'original_data' => $this->originalData,
             'auth_data' => [
-                'client_id'     => $this->authentication->client_id,
-                'secret'        => $this->authentication->secret,
-                'access_token'  => $this->authentication->access_token,
-                'refresh_token' => $this->authentication->refresh_token,
-                'token_expires' => $this->authentication->token_expires,
-                'scopes'        => $this->authentication->scopes,
+                'client_id'     => $this->authentication->getClientId(),
+                'secret'        => $this->authentication->getSecret(),
+                'access_token'  => $this->authentication->getAccessToken(),
+                'refresh_token' => $this->authentication->getRefreshToken(),
+                'token_expires' => $this->authentication->getTokenExpires(),
+                'scopes'        => $this->authentication->getScopes(),
             ]
         ];
     }
@@ -121,7 +118,7 @@ class Character
         //@todo error handling
         $char = new self($characterData['id']);
         $char->setName($characterData['name']);
-        $char->setAuthentication(new EsiAuthentication($characterData['auth_data']));
+        $char->setAuthentication(new AuthData($characterData['auth_data']));
         $char->setOriginalData($characterData['original_data']);
         return $char;
     }
